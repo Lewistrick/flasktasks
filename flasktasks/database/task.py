@@ -88,9 +88,20 @@ def update_by_id(task_id: int, **changes):
 
 
 def search_by_query(query: str):
+    """Search tasks by query.
+
+    The query is a text that should be contained completely within the description or
+    the title of the text.
+
+    It's not possible to use string searching operations in SQLModel statements, so a
+    statement is created that selects all tasks and then uses Python-native string
+    operations to search in the description and the title.
+    Using the yield_per(100) generator makes sure that this will not become too
+    memory-heavy, but also doesn't put a too heavy load on the database engine.
+    """
     logger.debug(f"Searching by string: {query}")
     statement = select(TaskRecord)
     with Session(engine) as session:
-        for task in session.exec(statement).all():
+        for task in session.exec(statement).yield_per(100):
             if query in task.description or query in task.title:
                 yield task
