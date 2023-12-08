@@ -1,4 +1,4 @@
-from flask import abort, request
+from flask import abort
 from flask_restful import Resource, reqparse
 from loguru import logger
 
@@ -7,6 +7,7 @@ from flasktasks.database.task import (
     delete_by_id,
     select_all_tasks,
     select_by_id,
+    update_by_id,
 )
 
 task_parser = reqparse.RequestParser()
@@ -50,7 +51,17 @@ class Task(Resource):
 
     def delete(self, task_id: int):
         logger.info(f"Deleting task with {task_id=}")
-        print(request)
         if delete_by_id(task_id):
             return {"message": "task deleted succesfully", "id": task_id}
         abort(404, f"Task with {task_id=} can't be deleted, because it doesn't exist")
+
+    def put(self, task_id: int):
+        args = task_parser.parse_args()
+        task = update_by_id(task_id, **args)
+        if task is not None:
+            return {
+                "message": "task updated succesfully",
+                "id": task_id,
+                **task.model_dump(),
+            }
+        abort(404, f"Task with {task_id=} can't be updated, because it doesn't exist")
