@@ -21,6 +21,13 @@ class TaskRecord(SQLModel, table=True):
         """Create a task in the database. Returns the ID of the created task."""
         with Session(engine) as session:
             session.add(self)
+            try:
+                # Make sure the updates conform to the validation;
+                # this is possible because SQLModel uses pydantic for data validation
+                self.model_validate(self)
+            except ValidationError as e:
+                # No harm is done here: the session has not been committed
+                abort(422, e)
             session.commit()
             # The commit will create the task ID (auto-increment)
             return self.task_id
