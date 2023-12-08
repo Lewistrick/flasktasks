@@ -2,6 +2,7 @@ from datetime import datetime
 
 from flask import abort
 from loguru import logger
+from pydantic import ValidationError, validator
 from sqlmodel import Field, Session, SQLModel, select
 
 from flasktasks.config import settings
@@ -18,22 +19,27 @@ class TaskRecord(SQLModel, table=True):
 
     def create(self):
         """Create a task in the database. Returns the ID of the created task."""
-        # Check if the due_date has the correct format
-        logger.debug("Parsing date")
-        try:
-            datetime.strptime(self.due_date, settings.database_date_format)
-        except ValueError:
-            abort(422, f"Date could not be parsed: {self.due_date}")
-
-        logger.debug("Creating session")
         with Session(engine) as session:
-            logger.debug("Add")
             session.add(self)
-            logger.debug("Commit")
+            try:
+                # Make sure the updates conform to the validation;
+                # this is possible because SQLModel uses pydantic for data validation
+                self.model_validate(self)
+            except ValidationError as e:
+                # No harm is done here: the session has not been committed
+                abort(422, e)
             session.commit()
-            logger.debug("Done")
             # The commit will create the task ID (auto-increment)
             return self.task_id
+
+    @validator("due_date")
+    def validate_due_date(cls, due_date):
+        """Check if the due_date has the correct format."""
+        try:
+            datetime.strptime(due_date, settings.database_date_format)
+        except ValueError:
+            raise ValueError(f"Date could not be parsed: {due_date}")
+        return due_date
 
 
 def select_all_tasks():
@@ -81,7 +87,35 @@ def update_by_id(task_id: int, **changes):
         for attribute, new_value in changes.items():
             logger.info(f"Setting '{attribute}' of task {task_id} to {new_value}")
             setattr(task, attribute, new_value)
+
+        try:
+            # Make sure the updates conform to the validation;
+            # this is possible because SQLModel uses pydantic for data validation
+            task.model_validate(task)
+        except ValidationError as e:
+            # No harm is done here: the session has not been committed
+            abort(422, e)
+
         session.add(task)
         session.commit()
         session.refresh(task)
         return task
+
+
+def search_by_query(query: str):
+    """Search tasks by query.
+
+    The query is a text that should be contained completely within the description or
+    the title of the text.
+
+    It's not possible to use string searching operations in SQLModel statements, so a
+    statement is created that selects all tasks and then uses Python-native string
+    operations to search in the description and the title.
+    Using the yield_per(100) generator makes sure that this will not become too
+    memory-heavy, but also doesn't put a too heavy load on the database engine.
+    """
+    statement = select(TaskRecord)
+    with Session(engine) as session:
+        for task in session.exec(statement).yield_per(100):
+            if query in task.description or query in task.title:
+                yield task
