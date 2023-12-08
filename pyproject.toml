@@ -8,6 +8,13 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 Flask = "^3.0.0"
+flask-restful = "^0.3.10"
+python-dotenv = "^1.0.0"
+sqlmodel = "^0.0.14"
+yoyo-migrations = "^8.2.0"
+setuptools = "^69.0.2"
+pydantic-settings = "^2.1.0"
+loguru = "^0.7.2"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.1.7"
