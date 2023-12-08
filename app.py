@@ -1,3 +1,8 @@
+"""The main function for the API.
+
+Can be run with either `flask run` or with `python app.py`.
+"""
+
 from flask import Flask
 from flask_restful import Api
 

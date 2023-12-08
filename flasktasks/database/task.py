@@ -67,3 +67,21 @@ def delete_by_id(task_id: int):
         session.commit()
 
     return True
+
+
+def update_by_id(task_id: int, **changes):
+    """Update one task in the database, given an ID.
+
+    Return True if the task exists, False otherwise.
+    """
+    task = select_by_id(task_id)
+    if task is None:
+        return None
+    with Session(engine) as session:
+        for attribute, new_value in changes.items():
+            logger.info(f"Setting '{attribute}' of task {task_id} to {new_value}")
+            setattr(task, attribute, new_value)
+        session.add(task)
+        session.commit()
+        session.refresh(task)
+        return task
