@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env")
 
     database_location: str = "tasks.sqlite3"
+    database_date_format: str = r"%Y-%m-%d"
 
     @property
     def database_connection_string(self):
