@@ -25,6 +25,7 @@ class TaskList(Resource):
         return [task.model_dump() for task in select_all_tasks()]
 
     def post(self):
+        """Create a new task."""
         args = task_parser.parse_args()
         logger.debug(args)
         task = TaskRecord(**args)
@@ -57,6 +58,11 @@ class Task(Resource):
         abort(404, f"Task with {task_id=} can't be deleted, because it doesn't exist")
 
     def put(self, task_id: int):
+        """Edit a task with given ID.
+
+        The attributes to edit are in the request body. Attributes that are not
+        specified will not be changed.
+        """
         args = {
             attr: value
             for attr, value in task_parser.parse_args().items()
@@ -74,5 +80,6 @@ class Task(Resource):
 
 class Search(Resource):
     def get(self, query: str):
+        """Search for tasks given a query."""
         logger.info(f"Searching tasks by text: {query}")
         return [task.model_dump() for task in search_by_query(query)]
