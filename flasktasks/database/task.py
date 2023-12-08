@@ -43,11 +43,27 @@ def select_all_tasks():
         return session.exec(statement).all()
 
 
-def select_by_id(id: int):
+def select_by_id(task_id: int):
     """Select one task from the database, given its ID.
 
     If the task doesn't exist, return None.
     """
-    statement = select(TaskRecord).where(TaskRecord.task_id == id)
+    statement = select(TaskRecord).where(TaskRecord.task_id == task_id)
     with Session(engine) as session:
         return session.exec(statement).first()
+
+
+def delete_by_id(task_id: int):
+    """Delete one task from the database, given an ID.
+
+    Return True if the task exists, False otherwise.
+    """
+    task = select_by_id(task_id)
+    if task is None:
+        return False
+
+    with Session(engine) as session:
+        session.delete(task)
+        session.commit()
+
+    return True
