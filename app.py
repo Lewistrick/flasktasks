@@ -7,9 +7,9 @@ app = Flask(__name__)
 api = Api(app)
 
 # Add resources for the API. Resources are defined by a resource class and an endpoint.
-# A resource class implements all methods that are allowed, e.g. get().
+# A resource class implements all methods that are allowed, e.g. get() and post().
 api.add_resource(task_resources.TaskList, "/tasks")
-api.add_resource(task_resources.Task, "/task/<int:id>")
+api.add_resource(task_resources.Task, "/task/<int:task_id>")
 
 if __name__ == "__main__":
     app.run()
