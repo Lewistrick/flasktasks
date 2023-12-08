@@ -79,6 +79,7 @@ def update_by_id(task_id: int, **changes):
         return None
     with Session(engine) as session:
         for attribute, new_value in changes.items():
+            logger.info(f"Setting '{attribute}' of task {task_id} to {new_value}")
             setattr(task, attribute, new_value)
         session.add(task)
         session.commit()

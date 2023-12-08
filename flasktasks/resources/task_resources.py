@@ -56,7 +56,11 @@ class Task(Resource):
         abort(404, f"Task with {task_id=} can't be deleted, because it doesn't exist")
 
     def put(self, task_id: int):
-        args = task_parser.parse_args()
+        args = {
+            attr: value
+            for attr, value in task_parser.parse_args().items()
+            if value is not None
+        }
         task = update_by_id(task_id, **args)
         if task is not None:
             return {
