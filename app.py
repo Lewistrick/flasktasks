@@ -15,6 +15,7 @@ api = Api(app)
 # A resource class implements all methods that are allowed, e.g. get() and post().
 api.add_resource(task_resources.TaskList, "/tasks")
 api.add_resource(task_resources.Task, "/task/<int:task_id>")
+api.add_resource(task_resources.Search, "/search/<string:query>")
 
 if __name__ == "__main__":
     app.run()

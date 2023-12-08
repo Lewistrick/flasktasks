@@ -85,3 +85,12 @@ def update_by_id(task_id: int, **changes):
         session.commit()
         session.refresh(task)
         return task
+
+
+def search_by_query(query: str):
+    logger.debug(f"Searching by string: {query}")
+    statement = select(TaskRecord)
+    with Session(engine) as session:
+        for task in session.exec(statement).all():
+            if query in task.description or query in task.title:
+                yield task

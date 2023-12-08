@@ -5,6 +5,7 @@ from loguru import logger
 from flasktasks.database.task import (
     TaskRecord,
     delete_by_id,
+    search_by_query,
     select_all_tasks,
     select_by_id,
     update_by_id,
@@ -69,3 +70,9 @@ class Task(Resource):
                 **task.model_dump(),
             }
         abort(404, f"Task with {task_id=} can't be updated, because it doesn't exist")
+
+
+class Search(Resource):
+    def get(self, query: str):
+        logger.info(f"Searching tasks by text: {query}")
+        return [task.model_dump() for task in search_by_query(query)]
