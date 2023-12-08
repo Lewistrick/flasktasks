@@ -80,6 +80,10 @@ class Task(Resource):
 
 class Search(Resource):
     def get(self, query: str):
-        """Search for tasks given a query."""
+        """Search for tasks given a query.
+
+        Here, the GET method was chosen because the queries are simple text.
+        For more complex search, one might want to use POST.
+        """
         logger.info(f"Searching tasks by text: {query}")
         return [task.model_dump() for task in search_by_query(query)]
