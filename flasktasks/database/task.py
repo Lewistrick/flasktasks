@@ -12,6 +12,12 @@ class TaskRecord(SQLModel, table=True):
     due_date: str
 
 
+def select_all_tasks():
+    statement = select(TaskRecord)
+    with Session(engine) as session:
+        return session.exec(statement).all()
+
+
 def select_by_id(id: int):
     statement = select(TaskRecord).where(TaskRecord.task_id == id)
     with Session(engine) as session:
