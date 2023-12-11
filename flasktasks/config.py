@@ -6,6 +6,7 @@ class Settings(BaseSettings):
 
     database_location: str = "tasks.sqlite3"
     database_date_format: str = r"%Y-%m-%d"
+    page_size: int = 10
 
     @property
     def database_connection_string(self):

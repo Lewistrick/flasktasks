@@ -1,7 +1,10 @@
-from flask import abort
+from typing import Mapping
+
+from flask import abort, request
 from flask_restful import Resource, reqparse
 from loguru import logger
 
+from flasktasks.config import settings
 from flasktasks.database.task import (
     TaskRecord,
     delete_by_id,
@@ -16,13 +19,33 @@ task_parser.add_argument("title")
 task_parser.add_argument("description")
 task_parser.add_argument("due_date")
 
+pager_parser = reqparse.RequestParser()
+task_parser.add_argument("page", type=int, default=1)
+task_parser.add_argument("page_size", type=int, default=settings.page_size)
+
+
+def paginate[T](elements: list[T], params: Mapping[str, str]) -> list[T]:
+    """Given a list of elements, return page `from_idx` for page size `page_size`.
+
+    Uses Python3.12's new typevar syntax for type T. This means the type of `elements`
+    doesn't matter, but the return type will be the same.
+    """
+    page_from = int(params.get("page", 1))
+    page_size = int(params.get("per", settings.page_size))
+
+    page = elements[(page_from - 1) * page_size : page_from * page_size]
+    return page
+
 
 class TaskList(Resource):
     """Takes care of reading all tasks and adding tasks."""
 
     def get(self):
         logger.info("Getting all tasks")
-        return [task.model_dump() for task in select_all_tasks()]
+
+        all_tasks = [task.model_dump() for task in select_all_tasks()]
+
+        return paginate(all_tasks, request.args)
 
     def post(self):
         """Create a new task."""
@@ -86,4 +109,5 @@ class Search(Resource):
         For more complex search, one might want to use POST.
         """
         logger.info(f"Searching tasks by text: {query}")
-        return [task.model_dump() for task in search_by_query(query)]
+        search_result = [task.model_dump() for task in search_by_query(query)]
+        return paginate(search_result, request.args)
