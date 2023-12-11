@@ -37,7 +37,7 @@ The API lets the user manipulate tasks that have a title, a description and a du
 - GET `/tasks/<id>` (replace `<id>` with the task ID) shows task with given ID
 - POST `/tasks` creates a task (payload must be Application/JSON with `title` and `due_date` fields, optional `description` field)
     - supports pagination (use parameters `page` (to specify page number) and `size` (to specify page length), e.g. `?page=2&size=10`); both are optional
-- PUT `/tasks/<id>` edits a task (payload optionally contains `title`, `due_date` and `description` and will only update given fields)
+- PATCH `/tasks/<id>` edits a task (payload optionally contains `title`, `due_date` and `description` and will only update given fields)
 - DELETE `/tasks/<id>` deletes a task with given ID
 - GET `/tasks/search/<query>` searches for all tasks that contain the exact string `<query>`
     - supports pagination (use parameters `page` (to specify page number) and `size` (to specify page length), e.g. `?page=2&size=10`; both are optional)

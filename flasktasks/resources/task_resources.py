@@ -70,7 +70,7 @@ class Task(Resource):
             return {"message": "task deleted succesfully", "id": task_id}
         abort(404, f"Task with {task_id=} can't be deleted, because it doesn't exist")
 
-    def put(self, task_id: int):
+    def patch(self, task_id: int):
         """Edit a task with given ID.
 
         The attributes to edit are in the request body. Attributes that are not
