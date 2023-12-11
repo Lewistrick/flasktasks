@@ -15,7 +15,7 @@
 - to run the app:
     - `flask run`
 - to run tests:
-    - `pytest` (only runs tests for the `database` module; this showcases my unit testing skills while not consuming my time on testing)
+    - `pytest` (only runs tests for the `database` module; this showcases my unit testing skills, while not consuming my limited assessment time)
 
 ## Endpoints
 - GET `/tasks/all` shows all tasks
