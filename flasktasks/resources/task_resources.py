@@ -29,7 +29,7 @@ def paginate[T](elements: list[T], params: Mapping[str, str]) -> list[T]:
     and the return type is also a list of this type as well.
     """
     page_from = int(params.get("page", 1))
-    page_size = int(params.get("per", settings.page_size))
+    page_size = int(params.get("size", settings.page_size))
 
     page = elements[(page_from - 1) * page_size : page_from * page_size]
     return page
@@ -41,8 +41,8 @@ class TaskList(Resource):
     def get(self):
         """Get all tasks.
 
-        Supports pagination: use GET parameters `page` and `per` to specify the page
-        number and the page size, e.g. /tasks?page=2&per=5.
+        Supports pagination: use GET parameters `page` and `size` to specify the page
+        number and the page size, e.g. /tasks?page=2&size=5.
         """
         logger.info("Getting all tasks")
 
@@ -50,13 +50,15 @@ class TaskList(Resource):
 
         return paginate(all_tasks, request.args)
 
-class TaskCreate(Resource):
     def post(self):
-        """Create a new task."""
+        """Create a new task.
+        
+        This is part of TaskList and not of Task, because Task resources require an ID,
+        whereas the ID of a newly created task will be generated after committing.
+        """
+        logger.info("Creating new task")
         args = task_parser.parse_args()
-        logger.debug(args)
         task = TaskRecord(**args)
-        logger.debug("Creating task")
         task_id = task.create()
         return {
             "message": "task created succesfully",
@@ -117,9 +119,9 @@ class Search(Resource):
             /tasks/search/query?sort=due_date&desc=1
         to sort by due_date, newest first.
 
-        Supports pagination: use GET parameters `page` and `per` to specify the page
+        Supports pagination: use GET parameters `page` and `size` to specify the page
         number and the page size, e.g.
-            /tasks/search/query?page=2&per=10
+            /tasks/search/query?page=2&size=10
         to show results 11 through 20.
         """
         logger.info(f"Searching tasks by text: {query}")
