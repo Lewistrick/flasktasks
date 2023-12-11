@@ -2,7 +2,7 @@ from datetime import datetime
 
 from flask import abort
 from loguru import logger
-from pydantic import ValidationError, validator
+from pydantic import ValidationError, field_validator
 from sqlmodel import Field, Session, SQLModel, select
 
 from flasktasks.config import settings
@@ -32,7 +32,7 @@ class TaskRecord(SQLModel, table=True):
             # The commit will create the task ID (auto-increment)
             return self.task_id
 
-    @validator("due_date")
+    @field_validator("due_date")
     def validate_due_date(cls, due_date):
         """Check if the due_date has the correct format."""
         try:
