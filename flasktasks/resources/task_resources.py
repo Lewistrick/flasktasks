@@ -43,6 +43,11 @@ class TaskList(Resource):
     """Takes care of reading all tasks and adding tasks."""
 
     def get(self):
+        """Get all tasks.
+
+        Supports pagination: use GET parameters `page` and `per` to specify the page
+        number and the page size, e.g. /tasklist?page=2&per=5.
+        """
         logger.info("Getting all tasks")
 
         all_tasks = [task.model_dump() for task in select_all_tasks()]
@@ -116,7 +121,20 @@ class Search(Resource):
 
         Here, the GET method was chosen because the queries are simple text.
         For more complex search, one might want to use POST.
+
+        Supports sorting: use GET parameters `sort` and `desc` to specify sorting, e.g.
+            /search/query?sort=due_date&desc=1
+        to sort by due_date, newest first.
+
+        Supports pagination: use GET parameters `page` and `per` to specify the page
+        number and the page size, e.g.
+            /search/query?page=2&per=10
+        to show results 11 through 20.
         """
         logger.info(f"Searching tasks by text: {query}")
-        search_result = [task.model_dump() for task in search_by_query(query)]
+        sort_by = request.args.get("sort")
+        sort_desc = bool(request.args.get("desc", False))
+        search_result = [
+            task.model_dump() for task in search_by_query(query, sort_by, sort_desc)
+        ]
         return paginate(search_result, request.args)
