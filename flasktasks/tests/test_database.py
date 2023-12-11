@@ -1,3 +1,8 @@
+"""This test suite only tests for the `database` module.
+
+this showcases my unit testing skills, while not consuming my limited assessment time.
+"""
+
 from unittest.mock import MagicMock
 from pytest import MonkeyPatch, raises
 from pytest_mock import MockerFixture
