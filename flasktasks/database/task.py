@@ -102,11 +102,13 @@ def update_by_id(task_id: int, **changes):
         return task
 
 
-def search_by_query(query: str):
+def search_by_query(query: str, sort_by: str | None = None, sort_desc: bool = False):
     """Search tasks by query.
 
     The query is a text that should be contained completely within the description or
     the title of the text.
+
+    If sort_by is given, sort by this value; if sort_desc is True, sort descending.
 
     It's not possible to use string searching operations in SQLModel statements, so a
     statement is created that selects all tasks and then uses Python-native string
@@ -115,6 +117,16 @@ def search_by_query(query: str):
     memory-heavy, but also doesn't put a too heavy load on the database engine.
     """
     statement = select(TaskRecord)
+    if sort_by:
+        try:
+            sort_column = getattr(TaskRecord, sort_by)
+        except AttributeError:
+            abort(404, f"Can't sort by column {sort_by}: column doesn't exist")
+
+        if sort_desc:
+            sort_column = sort_column.desc()
+        statement = statement.order_by(sort_column)
+
     with Session(engine) as session:
         for task in session.exec(statement).yield_per(100):
             if query in task.description or query in task.title:
