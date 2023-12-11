@@ -27,8 +27,10 @@ task_parser.add_argument("page_size", type=int, default=settings.page_size)
 def paginate[T](elements: list[T], params: Mapping[str, str]) -> list[T]:
     """Given a list of elements, return page `from_idx` for page size `page_size`.
 
-    Uses Python3.12's new typevar syntax for type T. This means the type of `elements`
-    doesn't matter, but the return type will be the same.
+    The typehints use Python3.12's new typevar syntax.
+    In practice, this means this function is dependent on some type T that is unknown,
+    but `elements` is a list of this type,
+    and the return type is also a list of this type as well.
     """
     page_from = int(params.get("page", 1))
     page_size = int(params.get("per", settings.page_size))
@@ -48,7 +50,12 @@ class TaskList(Resource):
         return paginate(all_tasks, request.args)
 
     def post(self):
-        """Create a new task."""
+        """Create a new task.
+
+        The reason to put this endpoint here is that the Task resource requires a
+        task_id but that is not yet known at this point; it will be created on task
+        creation.
+        """
         args = task_parser.parse_args()
         logger.debug(args)
         task = TaskRecord(**args)
@@ -66,6 +73,8 @@ class Task(Resource):
     GET reads a task;
     PUT edits a task;
     DELETE removes a task.
+
+    To create a task, use the TaskList resource.
     """
 
     def get(self, task_id: int):
