@@ -42,7 +42,7 @@ class TaskList(Resource):
         """Get all tasks.
 
         Supports pagination: use GET parameters `page` and `per` to specify the page
-        number and the page size, e.g. /tasklist?page=2&per=5.
+        number and the page size, e.g. /tasks?page=2&per=5.
         """
         logger.info("Getting all tasks")
 
@@ -52,12 +52,7 @@ class TaskList(Resource):
 
 class TaskCreate(Resource):
     def post(self):
-        """Create a new task.
-
-        The reason to put this endpoint here is that the Task resource requires a
-        task_id but that is not yet known at this point; it will be created on task
-        creation.
-        """
+        """Create a new task."""
         args = task_parser.parse_args()
         logger.debug(args)
         task = TaskRecord(**args)
@@ -76,8 +71,6 @@ class Task(Resource):
     GET reads a task;
     PUT edits a task;
     DELETE removes a task.
-
-    To create a task, use the TaskList resource.
     """
 
     def get(self, task_id: int):
@@ -121,12 +114,12 @@ class Search(Resource):
         For more complex search, one might want to use POST.
 
         Supports sorting: use GET parameters `sort` and `desc` to specify sorting, e.g.
-            /search/query?sort=due_date&desc=1
+            /tasks/search/query?sort=due_date&desc=1
         to sort by due_date, newest first.
 
         Supports pagination: use GET parameters `page` and `per` to specify the page
         number and the page size, e.g.
-            /search/query?page=2&per=10
+            /tasks/search/query?page=2&per=10
         to show results 11 through 20.
         """
         logger.info(f"Searching tasks by text: {query}")
