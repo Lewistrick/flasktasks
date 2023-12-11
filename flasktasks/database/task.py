@@ -14,7 +14,7 @@ class TaskRecord(SQLModel, table=True):
 
     task_id: int | None = Field(default=None, primary_key=True)
     title: str
-    description: str
+    description: str | None = ""
     due_date: str
 
     def create(self):

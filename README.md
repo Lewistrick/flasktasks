@@ -14,6 +14,8 @@
     - `python create_fake_tasks.py` (this creates 100 tasks with random titles, descriptions and dates)
 - to run the app:
     - `flask run`
+- to run tests:
+    - `pytest`
 
 ## Endpoints
 - GET `/tasks/all` shows all tasks
