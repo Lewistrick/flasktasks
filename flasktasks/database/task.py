@@ -12,7 +12,7 @@ from flasktasks.database import engine
 class TaskRecord(SQLModel, table=True):
     __tablename__ = "tasks"
 
-    task_id: int = Field(default=None, primary_key=True)
+    task_id: int | None = Field(default=None, primary_key=True)
     title: str
     description: str
     due_date: str

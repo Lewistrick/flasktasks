@@ -3,9 +3,17 @@
 > This is a REST API for a task list.
 
 ## Installation
-- to install dependencies and set up the app: `poetry install --without dev`
-- to initialize the database: `yoyo apply`
-- to run the app: `run flask`
+- create a virtual environment and activate it:
+    - `python -m venv .venv`
+    - `.venv\Scripts\activate`
+- install dependencies and set up the app:
+    - `pip install poetry`
+    - `poetry install`
+- initialize the database:
+    - `yoyo apply`
+    - `python create_fake_tasks.py` (this creates 100 tasks with random titles, descriptions and dates)
+- to run the app:
+    - `flask run`
 
 ## Details
 This API uses the following libraries:
