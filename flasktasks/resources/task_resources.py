@@ -19,10 +19,6 @@ task_parser.add_argument("title")
 task_parser.add_argument("description")
 task_parser.add_argument("due_date")
 
-pager_parser = reqparse.RequestParser()
-task_parser.add_argument("page", type=int, default=1)
-task_parser.add_argument("page_size", type=int, default=settings.page_size)
-
 
 def paginate[T](elements: list[T], params: Mapping[str, str]) -> list[T]:
     """Given a list of elements, return page `from_idx` for page size `page_size`.
@@ -54,6 +50,7 @@ class TaskList(Resource):
 
         return paginate(all_tasks, request.args)
 
+class TaskCreate(Resource):
     def post(self):
         """Create a new task.
 
@@ -64,6 +61,7 @@ class TaskList(Resource):
         args = task_parser.parse_args()
         logger.debug(args)
         task = TaskRecord(**args)
+        logger.debug("Creating task")
         task_id = task.create()
         return {
             "message": "task created succesfully",
