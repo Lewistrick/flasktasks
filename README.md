@@ -22,7 +22,9 @@ The API lets the user manipulate tasks that have a title, a description and a du
 - initialize the database (SQLite):
     - `yoyo apply`
     - `python create_fake_tasks.py` (this creates 100 tasks with random titles, descriptions and dates)
-- *optionally* copy the `.env_example` to `.env` and change the configuration values if they need to be different
+
+### Optional
+- copy the `.env_example` to `.env` and change the configuration values if they need to be different
     - `DATABASE_LOCATION`: where the database file will be saved
     - `PAGE_SIZE`: the default number of tasks to show in get-all and search
 

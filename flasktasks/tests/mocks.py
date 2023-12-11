@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from unittest.mock import MagicMock
 import pytest
 
 
@@ -38,8 +39,18 @@ class MockTaskRecord:
     def create(self):
         return self.task_id
 
+    def model_dump(self):
+        return {
+            "task_id": self.task_id,
+            "title": self.title,
+            "due_date": self.due_date,
+            "description": self.description
+        }
+    
     def model_validate(*args, **kwargs):
         pass
+
+
 
 
 class MockQueryResult:
@@ -82,6 +93,17 @@ class MockSession:
     def refresh(self, *args, **kwargs):
         pass
 
+class MockSelector():
+    def __init__(self):
+        self.call_count = 0
+
+    def __call__(self):
+        self.call_count += 1
+        return [MockTaskRecord(task_id=123, title="test", due_date="2000-01-01")]
+    
+class MockRequest:
+    args = {}
+
 
 @pytest.fixture
 def mock_task():
@@ -90,3 +112,7 @@ def mock_task():
         title="test-task",
         due_date="2000-01-01",
     )
+
+@pytest.fixture
+def mock_selector():
+    return MockSelector()
